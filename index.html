@@ -1,78 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Minimal Twitter Video Downloader</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root { --bg: #0f172a; --fg: #e6eef8; }
-    [data-theme="light"] { --bg: #f8fafc; --fg: #0f172a; }
-    body { background: var(--bg); color: var(--fg); transition: 0.25s; }
-    .toggle { width: 48px; height: 26px; border-radius: 999px; background: rgba(255,255,255,0.1); position: relative; cursor: pointer; }
-    .knob { width:20px; height:20px; border-radius:50%; background:var(--fg); position:absolute; top:3px; left:3px; transition:0.15s; }
-    .toggle.on .knob { left:25px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Video Downloader</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body data-theme="dark" class="min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-md">
-    <div class="flex justify-between mb-4">
-      <span>Twitter Video Downloader</span>
-      <div id="themeToggle" class="toggle"><div class="knob"></div></div>
+<body>
+    <div class="container">
+        <h1>Twitter Video Downloader</h1>
+        <input type="text" id="tweetUrl" placeholder="Enter Tweet URL">
+        <button onclick="downloadVideo()">Download</button>
+        <div id="result"></div>
     </div>
-    <div class="flex gap-2">
-      <input id="tweetInput" type="url" placeholder="Paste your link here" class="flex-1 p-2 border rounded" />
-      <button id="downloadBtn" class="px-4 py-2 border rounded">Download</button>
-    </div>
-    <p id="status" class="mt-2 text-sm text-gray-400"></p>
-  </div>
-
-<script>
-const input = document.getElementById('tweetInput');
-const btn = document.getElementById('downloadBtn');
-const status = document.getElementById('status');
-const themeToggle = document.getElementById('themeToggle');
-const body = document.body;
-
-// Theme toggle
-themeToggle.addEventListener('click', () => {
-  const light = body.getAttribute('data-theme') === 'light';
-  body.setAttribute('data-theme', light ? 'dark' : 'light');
-  themeToggle.classList.toggle('on', !light);
-});
-
-function setStatus(msg, err=false) {
-  status.textContent = msg;
-  status.style.color = err ? 'red' : '';
-}
-
-btn.addEventListener('click', async () => {
-  const tweetUrl = input.value.trim();
-  if (!tweetUrl) return setStatus('Enter a valid tweet URL', true);
-
-  setStatus('Fetching video...');
-  btn.disabled = true;
-
-  try {
-    const res = await fetch(`/api/download?url=${encodeURIComponent(tweetUrl)}`);
-    const data = await res.json();
-
-    if (!data.success) throw new Error(data.error || 'No video found');
-
-    const a = document.createElement('a');
-    a.href = data.url;
-    a.download = 'twitter_video.mp4';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setStatus('Download started!');
-  } catch (e) {
-    console.error(e);
-    setStatus('Error: ' + e.message, true);
-  } finally {
-    btn.disabled = false;
-  }
-});
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
